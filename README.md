@@ -1,3 +1,7 @@
+![alt text](https://raw.githubusercontent.com/Murugawell/Todo-App/master/output/Capture1.png)
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
