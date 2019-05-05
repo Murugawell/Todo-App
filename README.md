@@ -1,6 +1,6 @@
 ![alt text](https://raw.githubusercontent.com/Murugawell/Todo-App/master/output/Capture1.png)
 ![alt text](https://raw.githubusercontent.com/Murugawell/Todo-App/master/output/Capture2.png)
-![alt text](https://raw.githubusercontent.com/Murugawell/Todo-App/master/output/Capture3.png)
+![alt text](https://raw.githubusercontent.com/Murugawell/Todo-App/master/output/Capture3.PNG)
 ![alt text](https://raw.githubusercontent.com/Murugawell/Todo-App/master/output/Capture4.png)
 ![alt text](https://raw.githubusercontent.com/Murugawell/Todo-App/master/output/Capture5.png)
 
