@@ -1,16 +1,22 @@
 import React, { Component } from 'react';
-import { Modal, Form } from 'react-bootstrap';
 import './styles/todo.css';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import MaterialIcon, { colorPalette } from 'material-icons-react';
-
+import MaterialIcon from 'material-icons-react';
+import Dialog from './Dialog'
 
 export default class ToDo extends Component {
     state = {
-        show: false
+        show: false,
+        edit: false,
+        selectedTodo: {
+            name: 'test',
+            id: '',
+            date: ''
+        }
     }
+
     todoName;
     todoDate;
+
     toDos = [{
         id: 1,
         name: 'Learn React',
@@ -27,14 +33,21 @@ export default class ToDo extends Component {
         date: new Date().toDateString()
     }]
 
+    getTitle = () => {
+        if (this.state.edit) {
+            return 'Edit Todo';
+        }
+        else {
+            return 'Add New Todo'
+        }
+    }
+
     deleteDo = (id) => {
         this.toDos = this.toDos.filter((todo) => id !== todo.id)
         this.setState(this.toDos);
     }
 
     addToDo = () => {
-        console.log(this.todoName);
-
         let toDo = {
             id: this.toDos.length + 1,
             name: this.todoName.value,
@@ -44,24 +57,81 @@ export default class ToDo extends Component {
         this.setState(this.toDos);
     }
 
+    enableEditTodo = (id) => {
+        this.setState({ show: true, edit: true });
+        let todo = this.toDos.filter(todo => id === todo.id)[0];
+        this.setState({
+            selectedTodo: {
+                name: todo.name,
+                date: this.setDate(todo.date),
+                id: todo.id
+            }
+        });
+    }
+    setDate = (date) => {
+        let tmpDate = new Date(date);
+        let yr = tmpDate.getFullYear();
+        let mn = tmpDate.getMonth() < 9 ? '0' + (tmpDate.getMonth() + 1) : tmpDate.getMonth() + 1;
+        let dt = tmpDate.getDate() < 9 ? '0' + tmpDate.getDate() : tmpDate.getDate();
+        return [yr, mn, dt].join('-');
+    }
+    editTodo = () => {
+
+        this.toDos = this.toDos.map((x) => {
+            if (x.id == this.state.selectedTodo.id) {
+                x.name = this.todoName.value;
+                x.date = new Date(this.todoDate.value).toDateString()
+                return x;
+            } else {
+                return x;
+            }
+        })
+
+        console.log(this.toDos)
+
+        this.setState(this.toDos);
+    }
     setTodoName = (ref) => {
         this.todoName = ref;
+        console.log("set name", this.todoName)
     }
 
     setTodoDate = (ref) => {
         this.todoDate = ref;
     }
 
-
     showDialog = () => {
-        this.state.show = true;
-        this.setState(this.state);
+        // this.state.show = true;
+        this.setState({ show: true, edit: false, selectedTodo: { name: '' } });
     }
 
     closeDialog = () => {
-        this.state.show = false;
-        this.setState(this.state);
+        // this.state.show = false;
+        this.setState({ show: false });
     }
+
+    handle = (attr, event) => {
+        this.setState({
+            selectedTodo: {
+                attr: event.target.value
+            }
+        })
+
+    }
+    submitTodo = () => {
+        if (this.state.edit) {
+            this.editTodo();
+        } else {
+            this.addToDo();
+        }
+    }
+
+    change = name => event => {
+        alert(event.target.value)
+        this.setState({
+            [name]: event.target.value,
+        });
+    };
     render() {
 
         return (
@@ -84,6 +154,11 @@ export default class ToDo extends Component {
                             <span className="todo-date">
                                 {todo.date}
                             </span>
+                            <button className="btn" onClick={() => this.enableEditTodo(todo.id)}>
+                                <MaterialIcon icon="edit" color="black" />
+
+                            </button>
+
                             <button className="btn" onClick={() => this.deleteDo(todo.id)}>
                                 <MaterialIcon icon="delete" color="red" />
 
@@ -96,28 +171,14 @@ export default class ToDo extends Component {
                     <MaterialIcon icon="add" color="white" />
                 </button>
 
-                <Modal show={this.state.show} onHide={this.closeDialog} centered>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Add New Todo</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form>
-                            <Form.Group controlId="formTodoName">
-                                <Form.Label>Todo Name</Form.Label>
-                                <Form.Control ref={ref => { this.setTodoName(ref) }} type="text" placeholder="Enter name of the todo" />
-                            </Form.Group>
-
-                            <Form.Group controlId="formTodoDate">
-                                <Form.Label>Date</Form.Label>
-                                <Form.Control type="date" ref={ref => { this.setTodoDate(ref) }} placeholder="Select date" />
-                            </Form.Group>
-                        </Form>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <button className="btn btn-warning" onClick={() => this.closeDialog()}>Close</button>
-                        <button className="btn btn-primary" onClick={() => { this.closeDialog(); this.addToDo() }}> Save Changes </button>
-                    </Modal.Footer>
-                </Modal>
+                <Dialog
+                    state={this.state}
+                    closeDialog={this.closeDialog}
+                    getTitle={this.getTitle}
+                    setTodoDate={(ref) => this.setTodoDate(ref)}
+                    setTodoName={(ref) => this.setTodoName(ref)}
+                    submitTodo={() => this.submitTodo()}
+                />
             </div>
 
         )
